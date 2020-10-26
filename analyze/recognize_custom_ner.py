@@ -3,7 +3,6 @@ import os
 
 
 class RecognizeWithCustomNER:
-
     address_model = ''
 
     def __init__(self):

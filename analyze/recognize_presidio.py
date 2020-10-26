@@ -67,7 +67,7 @@ def recognize_by_priority(input_text, response_data):  # Apply priority on top o
         end_index = 0 if start_index == 0 else 1
         start = result[start_index]['location']['end'] - result[start_index]['location']['length']
         end = result[end_index]['location']['end']
-        return get_output(input_text, 'EMAIL', start, end,)
+        return get_output(input_text, 'EMAIL', start, end, )
     else:
         for r in response_data.json():
             if r['score'] == max_score:

@@ -3,6 +3,7 @@ from analyze import RecognizeWithCustomNER as custom_ner
 from analyze import RecognizeWithPresidio as presidio
 import pandas as pd
 import os
+
 load_dotenv()
 
 
@@ -29,7 +30,6 @@ def output_file(df):
 
 
 def get_prediction(text):
-
     custom_prediction = custom_ner.predict(text)
     presidio_prediction = presidio.predict(text)
 
@@ -40,9 +40,14 @@ def get_prediction(text):
         elif presidio_prediction['label'] != 'Plates' and presidio_prediction['label'] != 'Name':
             print("presidio_prediction")
             return presidio_prediction
-        else:
+        elif custom_prediction['label'] == 'Address':
             print("custom_prediction")
             return custom_prediction
+        else:
+            print("presidio_prediction")
+            return presidio_prediction
+            # print("custom_prediction")
+            # return custom_prediction
     elif custom_prediction is not None:
         print("custom_prediction")
         return custom_prediction
