@@ -17,10 +17,10 @@ class BuildNERSpacyModel:
         train_df, test_df = self.read_data(input_path)  # get the right input
         print(train_df['Labels'].unique())
         train_data_spacy_ready = self.prepare_for_spacy(train_df, 'Text', 'PII')
-        address_nlp = self.train_spacy(train_data_spacy_ready, spacy.blank("en"), 12)  # get custom entity ner model
+        address_nlp = self.train_spacy(train_data_spacy_ready, spacy.blank("en"), 6)  # get custom entity ner model
 
         test_df.to_excel(os.path.join(os.getcwd(), '..', 'data', 'test.xlsx'), index=False)
-
+        print(f"Test data split is saved at {os.path.join(os.getcwd(), '..', 'data', 'test.xlsx')}")
         model_save_path = os.path.join(os.getcwd(), '..', 'custom_NER_model')
         print(f"model is saved at {model_save_path}")
         address_nlp.to_disk(model_save_path)  # Save Address Model
@@ -48,7 +48,7 @@ class BuildNERSpacyModel:
             lossArray = []
             itns = []
             for itn in range(iterations):
-                print("Starting iteration... " + str(itn))
+                print("Starting iteration... ", itn+1)
                 random.shuffle(train_data)
                 losses = {}
 
@@ -85,12 +85,16 @@ class BuildNERSpacyModel:
         df = pd.ExcelFile(path)
         df = pd.read_excel(df, os.getenv('TRAINING_DATA_SHEET'), skiprows=1)
         print(f'Reading file {path}')
-        df = df[df['Labels'] != 'Plates']
-        df = df.astype('str')
-        for col in df.columns:
-            df[col] = df[col].str.strip()
-        train = df.sample(random_state=322, frac=0.8)
-        test = df.drop(train.index)
+        data = df[(df['Labels'] != 'Plates') & (df['Labels'] != 'None')]
+        extra_data = df[(df['Labels'] == 'Plates') | (df['Labels'] == 'None')]
+        data = data.astype('str')
+        for col in data.columns:
+            data[col] = data[col].str.strip()
+        train = data.sample(random_state=322, frac=0.8)
+        test = data.drop(train.index)
+        test = pd.concat([test, extra_data], ignore_index=True)
+        print(f'training samples: {len(train)}')
+        print(f'testing samples: {len(test)}')
         return train, test
 
 
