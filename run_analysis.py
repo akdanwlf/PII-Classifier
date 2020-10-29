@@ -35,7 +35,7 @@ def get_prediction(text):
 
     if custom_prediction is not None and presidio_prediction is not None:
         if custom_prediction['label'] == presidio_prediction['label']:
-            print("custom_prediction")
+            print("match")
             return custom_prediction
         elif presidio_prediction['label'] != 'Plates' and presidio_prediction['label'] != 'Name':
             print("presidio_prediction")

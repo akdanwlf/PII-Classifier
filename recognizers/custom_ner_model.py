@@ -17,7 +17,7 @@ class BuildNERSpacyModel:
         train_df, test_df = self.read_data(input_path)  # get the right input
         print(train_df['Labels'].unique())
         train_data_spacy_ready = self.prepare_for_spacy(train_df, 'Text', 'PII')
-        address_nlp = self.train_spacy(train_data_spacy_ready, spacy.blank("en"), 6)  # get custom entity ner model
+        address_nlp = self.train_spacy(train_data_spacy_ready, spacy.blank("en"), 7)  # get custom entity ner model
 
         test_df.to_excel(os.path.join(os.getcwd(), '..', 'data', 'test.xlsx'), index=False)
         print(f"Test data split is saved at {os.path.join(os.getcwd(), '..', 'data', 'test.xlsx')}")
@@ -56,7 +56,7 @@ class BuildNERSpacyModel:
                     nlp.update(
                         [text],  # batch of texts
                         [annotations],  # batch of annotations
-                        drop=0.2,  # dropout - make it harder to memorise data
+                        drop=0.25,  # dropout - make it harder to memorise data
                         sgd=optimizer,  # callable to update weights
                         losses=losses)  # Calculates difference between the training example and the expected output
                 print(losses)
@@ -85,7 +85,7 @@ class BuildNERSpacyModel:
         df = pd.ExcelFile(path)
         df = pd.read_excel(df, os.getenv('TRAINING_DATA_SHEET'), skiprows=1)
         print(f'Reading file {path}')
-        data = df[(df['Labels'] != 'Plates') & (df['Labels'] != 'None')]
+        data = df[df['Labels'] != 'None']
         extra_data = df[(df['Labels'] == 'Plates') | (df['Labels'] == 'None')]
         data = data.astype('str')
         for col in data.columns:
